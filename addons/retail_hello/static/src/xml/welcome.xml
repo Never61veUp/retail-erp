@@ -3,6 +3,7 @@
     <t t-name="retail_hello.Welcome">
         <div class="o_action">
             <div class="container mt-4">
+                <h1 class="title">Операционная система для ритейла</h1>
                 <h1>Добро пожаловать в Retail ERP!</h1>
                 <p>Это первое приложение Odoo.</p>
             </div>
