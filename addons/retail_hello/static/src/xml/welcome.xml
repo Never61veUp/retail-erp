@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="retail_hello.Welcome">
+        <div class="o_action">
+            <div class="container mt-4">
+                <h1>Добро пожаловать в Retail ERP!</h1>
+                <p>Это первое приложение Odoo.</p>
+            </div>
+        </div>
+    </t>
+</templates>
