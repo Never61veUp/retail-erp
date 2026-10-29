@@ -1,7 +1,7 @@
 {
     "name": "Retail Hello",
     "version": "1.0.0",
-    "depends": ["base"],
+    "depends": ["base", "sale"],
     "data": [
         "views/menu.xml",
     ],
@@ -9,16 +9,11 @@
         "web.assets_backend": [
             "retail_hello/static/src/js/welcome.js",
             "retail_hello/static/src/xml/welcome.xml",
+            "retail_hello/static/src/styles/style.css",
         ],
     },
     "installable": True,
     "application": True,
 }
 
-"assets": {
-    "web.assets_backend": [
-        "retail_hello/static/src/js/welcome.js",
-        "retail_hello/static/src/xml/welcome.xml",
-        "retail_hello/static/src/styles/style.css",
-    ],
-},
+
