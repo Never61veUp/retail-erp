@@ -4,6 +4,7 @@
     "depends": ["base", "sale"],
     "data": [
         "views/menu.xml",
+        "views/product_template_views.xml",
     ],
     "assets": {
         "web.assets_backend": [
