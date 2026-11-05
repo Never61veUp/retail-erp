@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_retail_hello" model="ir.actions.client">
+        <field name="name">Привет</field>
+        <field name="tag">retail_hello.welcome</field>
+    </record>
+
+    <menuitem
+        id="menu_retail_hello_root"
+        name="Retail ERP"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_retail_hello_welcome"
+        name="Привет"
+        parent="menu_retail_hello_root"
+        action="action_retail_hello"
+        sequence="10"
+    />
+</odoo>
