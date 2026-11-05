@@ -8,6 +8,16 @@
             <xpath expr="//field[@name='default_code']" position="attributes">
                 <attribute name="string">Артикул</attribute>
             </xpath>
+            <xpath expr="//field[@name='standard_price']" position="attributes">
+                <attribute name="string">Закупочная цена</attribute>
+            </xpath>
+            <xpath expr="//field[@name='uom_id']" position="attributes">
+                <attribute name="string">Единица измерения</attribute>
+            </xpath>
+            <xpath expr="//field[@name='default_code']" position="after">
+                <field name="standard_price" position="move"/>
+                <field name="uom_id" position="move"/>
+            </xpath>
         </field>
     </record>
 </odoo>
