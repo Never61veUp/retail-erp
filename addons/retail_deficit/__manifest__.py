@@ -6,6 +6,7 @@
     "license": "LGPL-3",
     "depends": ["stock", "purchase", "mail"],
     "data": [
+        "security/ir.model.access.csv",
         "data/ir_sequence.xml",
         "data/ir_cron.xml",
         "views/retail_stock_alert_views.xml",
