@@ -5,6 +5,7 @@
     "depends": ["product", "uom", "purchase", "stock", "point_of_sale"],
     "data": [
         "views/product_template_views.xml",
+        "views/stock_quant_views.xml",
     ],
     "installable": True,
     "application": False,
