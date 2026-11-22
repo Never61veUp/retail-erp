@@ -1,7 +1,7 @@
 {
-    "name": "Retail Deficit Alerts",
+    "name": "Уведомления дефицита",
     "version": "19.0.1.0.0",
-    "summary": "Low stock alerts and purchase orders from min/max recommendations",
+    "summary": "Уведомления о низких запасах и заказ поставщику по правилам min/max",
     "author": "",
     "license": "LGPL-3",
     "depends": ["stock", "purchase", "mail"],
