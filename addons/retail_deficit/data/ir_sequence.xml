@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="seq_retail_stock_alert" model="ir.sequence">
-        <field name="name">Retail Stock Alert</field>
+        <field name="name">Уведомление о дефиците запасов</field>
         <field name="code">retail.stock.alert</field>
         <field name="prefix">AL/</field>
         <field name="padding">5</field>

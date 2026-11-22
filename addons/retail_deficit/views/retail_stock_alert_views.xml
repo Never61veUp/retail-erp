@@ -5,7 +5,7 @@
         <field name="model">retail.stock.alert</field>
         <field name="arch" type="xml">
             <list
-                string="Stock Alerts"
+                string="Уведомления дефицита"
                 decoration-danger="state == 'new'"
                 decoration-warning="state == 'ordered'"
                 decoration-success="state == 'done'"
@@ -29,7 +29,7 @@
         <field name="name">retail.stock.alert.form</field>
         <field name="model">retail.stock.alert</field>
         <field name="arch" type="xml">
-            <form string="Stock Alert">
+            <form string="Уведомление дефицита">
                 <header>
                     <button
                         name="action_create_purchase_order"
@@ -80,7 +80,7 @@
         <field name="name">retail.stock.alert.search</field>
         <field name="model">retail.stock.alert</field>
         <field name="arch" type="xml">
-            <search string="Stock Alerts">
+            <search string="Уведомления дефицита">
                 <field name="product_id"/>
                 <field name="location_id"/>
                 <field name="warehouse_id"/>
@@ -101,7 +101,7 @@
     </record>
 
     <record id="action_retail_stock_alert" model="ir.actions.act_window">
-        <field name="name">Stock Alerts</field>
+        <field name="name">Уведомления дефицита</field>
         <field name="res_model">retail.stock.alert</field>
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_retail_stock_alert_search"/>
@@ -110,7 +110,7 @@
 
     <menuitem
         id="menu_retail_stock_alert_purchase"
-        name="Stock Alerts"
+        name="Уведомления дефицита"
         parent="purchase.menu_purchase_root"
         action="action_retail_stock_alert"
         sequence="15"
@@ -118,7 +118,7 @@
 
     <menuitem
         id="menu_retail_stock_alert_inventory"
-        name="Stock Alerts"
+        name="Уведомления дефицита"
         parent="stock.menu_stock_warehouse_mgmt"
         action="action_retail_stock_alert"
         sequence="90"
