@@ -4,62 +4,63 @@ from odoo.exceptions import ValidationError
 
 class RetailPurchaseDiscrepancy(models.Model):
     _name = "retail.purchase.discrepancy"
-    _description = "Purchase Delivery Discrepancy"
+    _description = "Расхождение при поставке"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "date desc, id desc"
 
     purchase_order_id = fields.Many2one(
         "purchase.order",
-        string="Purchase Order",
+        string="Заказ поставщику",
         required=True,
         ondelete="cascade",
         index=True,
     )
     purchase_line_id = fields.Many2one(
         "purchase.order.line",
-        string="Purchase Line",
+        string="Строка заказа",
         required=True,
         ondelete="cascade",
         index=True,
     )
     picking_id = fields.Many2one(
         "stock.picking",
-        string="Receiving",
+        string="Приёмка",
         ondelete="set null",
     )
     product_id = fields.Many2one(
         "product.product",
-        string="Product",
+        string="Товар",
         related="purchase_line_id.product_id",
         store=True,
         readonly=True,
     )
     discrepancy_type = fields.Selection(
         [
-            ("under", "Under-delivery"),
-            ("over", "Over-delivery"),
-            ("damage", "Damaged"),
+            ("under", "Недовоз"),
+            ("over", "Излишек"),
+            ("damage", "Брак"),
         ],
-        string="Type",
+        string="Тип расхождения",
         required=True,
         tracking=True,
         index=True,
     )
-    quantity = fields.Float(string="Quantity", required=True, tracking=True)
-    reason = fields.Text(string="Reason", required=True, tracking=True)
+    quantity = fields.Float(string="Количество", required=True, tracking=True)
+    reason = fields.Text(string="Причина", required=True, tracking=True)
     date = fields.Datetime(
-        string="Date",
+        string="Дата",
         default=fields.Datetime.now,
         required=True,
     )
     user_id = fields.Many2one(
         "res.users",
-        string="Recorded By",
+        string="Кто зафиксировал",
         default=lambda self: self.env.user,
         required=True,
     )
     company_id = fields.Many2one(
         "res.company",
+        string="Компания",
         related="purchase_order_id.company_id",
         store=True,
         readonly=True,
@@ -69,7 +70,7 @@ class RetailPurchaseDiscrepancy(models.Model):
     def _check_quantity(self):
         for discrepancy in self:
             if discrepancy.quantity <= 0:
-                raise ValidationError(_("Discrepancy quantity must be greater than zero."))
+                raise ValidationError(_("Количество расхождения должно быть больше нуля."))
 
     @api.constrains("purchase_line_id", "purchase_order_id")
     def _check_purchase_line(self):
@@ -79,7 +80,7 @@ class RetailPurchaseDiscrepancy(models.Model):
                 and discrepancy.purchase_line_id.order_id != discrepancy.purchase_order_id
             ):
                 raise ValidationError(
-                    _("The purchase line must belong to the selected purchase order.")
+                    _("Строка должна принадлежать выбранному заказу поставщику.")
                 )
 
     @api.constrains("picking_id", "purchase_order_id")
@@ -94,7 +95,7 @@ class RetailPurchaseDiscrepancy(models.Model):
             )
             if discrepancy.picking_id not in picking_ids:
                 raise ValidationError(
-                    _("The receiving must belong to the selected purchase order.")
+                    _("Приёмка должна относиться к выбранному заказу поставщику.")
                 )
 
     @api.constrains("reason")
@@ -102,7 +103,7 @@ class RetailPurchaseDiscrepancy(models.Model):
         for discrepancy in self:
             if not discrepancy.reason or not discrepancy.reason.strip():
                 raise ValidationError(
-                    _("Please provide a reason for the discrepancy.")
+                    _("Укажите причину расхождения.")
                 )
 
     @api.onchange("purchase_line_id")
@@ -117,11 +118,11 @@ class PurchaseOrder(models.Model):
     retail_discrepancy_ids = fields.One2many(
         "retail.purchase.discrepancy",
         "purchase_order_id",
-        string="Delivery Discrepancies",
+        string="Расхождения поставки",
     )
     retail_discrepancy_count = fields.Integer(
         compute="_compute_retail_discrepancy_count",
-        string="Discrepancy Count",
+        string="Количество расхождений",
     )
 
     def _compute_retail_discrepancy_count(self):
@@ -131,7 +132,7 @@ class PurchaseOrder(models.Model):
     def action_record_retail_discrepancy(self):
         self.ensure_one()
         return {
-            "name": _("Record Delivery Discrepancy"),
+            "name": _("Зафиксировать расхождение"),
             "type": "ir.actions.act_window",
             "res_model": "retail.purchase.discrepancy.wizard",
             "view_mode": "form",
@@ -144,7 +145,7 @@ class PurchaseOrder(models.Model):
     def action_open_retail_discrepancies(self):
         self.ensure_one()
         return {
-            "name": _("Delivery Discrepancies"),
+            "name": _("Расхождения поставки"),
             "type": "ir.actions.act_window",
             "res_model": "retail.purchase.discrepancy",
             "view_mode": "list,form",
@@ -155,30 +156,30 @@ class PurchaseOrder(models.Model):
 
 class RetailPurchaseDiscrepancyWizard(models.TransientModel):
     _name = "retail.purchase.discrepancy.wizard"
-    _description = "Record Purchase Delivery Discrepancy"
+    _description = "Фиксация расхождения при поставке"
 
     purchase_order_id = fields.Many2one(
         "purchase.order",
-        string="Purchase Order",
+        string="Заказ поставщику",
         required=True,
     )
     purchase_line_id = fields.Many2one(
         "purchase.order.line",
-        string="Purchase Line",
+        string="Строка заказа",
         required=True,
     )
-    picking_id = fields.Many2one("stock.picking", string="Receiving")
+    picking_id = fields.Many2one("stock.picking", string="Приёмка")
     discrepancy_type = fields.Selection(
         [
-            ("under", "Under-delivery"),
-            ("over", "Over-delivery"),
-            ("damage", "Damaged"),
+            ("under", "Недовоз"),
+            ("over", "Излишек"),
+            ("damage", "Брак"),
         ],
-        string="Type",
+        string="Тип расхождения",
         required=True,
     )
-    quantity = fields.Float(string="Quantity", required=True)
-    reason = fields.Text(string="Reason", required=True)
+    quantity = fields.Float(string="Количество", required=True)
+    reason = fields.Text(string="Причина", required=True)
 
     @api.onchange("purchase_order_id")
     def _onchange_purchase_order_id(self):
@@ -188,15 +189,15 @@ class RetailPurchaseDiscrepancyWizard(models.TransientModel):
     def action_confirm(self):
         self.ensure_one()
         if self.quantity <= 0:
-            raise ValidationError(_("Discrepancy quantity must be greater than zero."))
+            raise ValidationError(_("Количество расхождения должно быть больше нуля."))
         if not self.reason or not self.reason.strip():
-            raise ValidationError(_("Please provide a reason for the discrepancy."))
+            raise ValidationError(_("Укажите причину расхождения."))
         if self.purchase_line_id.order_id != self.purchase_order_id:
-            raise ValidationError(_("The purchase line must belong to the selected purchase order."))
+            raise ValidationError(_("Строка должна принадлежать выбранному заказу поставщику."))
         if self.picking_id:
             picking_ids = getattr(self.purchase_order_id, "picking_ids", self.env["stock.picking"])
             if self.picking_id not in picking_ids:
-                raise ValidationError(_("The receiving must belong to the selected purchase order."))
+                raise ValidationError(_("Приёмка должна относиться к выбранному заказу поставщику."))
 
         discrepancy = self.env["retail.purchase.discrepancy"].create({
             "purchase_order_id": self.purchase_order_id.id,
@@ -208,7 +209,7 @@ class RetailPurchaseDiscrepancyWizard(models.TransientModel):
         })
 
         return {
-            "name": _("Delivery Discrepancy"),
+            "name": _("Расхождение поставки"),
             "type": "ir.actions.act_window",
             "res_model": "retail.purchase.discrepancy",
             "res_id": discrepancy.id,

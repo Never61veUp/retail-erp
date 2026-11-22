@@ -4,7 +4,7 @@
         <field name="name">retail.purchase.discrepancy.list</field>
         <field name="model">retail.purchase.discrepancy</field>
         <field name="arch" type="xml">
-            <list string="Delivery Discrepancies">
+            <list string="Расхождения поставки">
                 <field name="date"/>
                 <field name="purchase_order_id"/>
                 <field name="product_id"/>
@@ -21,7 +21,7 @@
         <field name="name">retail.purchase.discrepancy.form</field>
         <field name="model">retail.purchase.discrepancy</field>
         <field name="arch" type="xml">
-            <form string="Delivery Discrepancy">
+            <form string="Расхождение поставки">
                 <sheet>
                     <group>
                         <group>
@@ -51,22 +51,22 @@
         <field name="name">retail.purchase.discrepancy.search</field>
         <field name="model">retail.purchase.discrepancy</field>
         <field name="arch" type="xml">
-            <search string="Delivery Discrepancies">
+            <search string="Расхождения поставки">
                 <field name="purchase_order_id"/>
                 <field name="product_id"/>
                 <field name="reason"/>
-                <filter name="under" string="Under-delivery"
+                <filter name="under" string="Недовоз"
                         domain="[('discrepancy_type', '=', 'under')]"/>
-                <filter name="over" string="Over-delivery"
+                <filter name="over" string="Излишек"
                         domain="[('discrepancy_type', '=', 'over')]"/>
-                <filter name="damage" string="Damaged"
+                <filter name="damage" string="Брак"
                         domain="[('discrepancy_type', '=', 'damage')]"/>
                 <group>
-                    <filter name="group_type" string="Type"
+                    <filter name="group_type" string="Тип расхождения"
                             context="{'group_by': 'discrepancy_type'}"/>
-                    <filter name="group_order" string="Purchase Order"
+                    <filter name="group_order" string="Заказ поставщику"
                             context="{'group_by': 'purchase_order_id'}"/>
-                    <filter name="group_product" string="Product"
+                    <filter name="group_product" string="Товар"
                             context="{'group_by': 'product_id'}"/>
                 </group>
             </search>
@@ -77,7 +77,7 @@
         <field name="name">retail.purchase.discrepancy.wizard.form</field>
         <field name="model">retail.purchase.discrepancy.wizard</field>
         <field name="arch" type="xml">
-            <form string="Record Delivery Discrepancy">
+            <form string="Фиксация расхождения">
                 <group>
                     <group>
                         <field name="purchase_order_id" readonly="1"/>
@@ -97,16 +97,16 @@
                 <footer>
                     <button name="action_confirm"
                             type="object"
-                            string="Record"
+                            string="Зафиксировать"
                             class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button string="Отмена" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
         </field>
     </record>
 
     <record id="action_retail_purchase_discrepancy" model="ir.actions.act_window">
-        <field name="name">Delivery Discrepancies</field>
+        <field name="name">Расхождения поставки</field>
         <field name="res_model">retail.purchase.discrepancy</field>
         <field name="view_mode">list,form</field>
         <field name="search_view_id"
@@ -125,11 +125,11 @@
                         icon="fa-exclamation-triangle">
                     <field name="retail_discrepancy_count"
                            widget="statinfo"
-                           string="Discrepancies"/>
+                           string="Расхождения"/>
                 </button>
             </xpath>
             <xpath expr="//notebook" position="inside">
-                <page string="Delivery Discrepancies"
+                <page string="Расхождения поставки"
                       name="retail_delivery_discrepancies">
                     <field name="retail_discrepancy_ids" readonly="1">
                         <list>
@@ -144,7 +144,7 @@
                     </field>
                     <button name="action_record_retail_discrepancy"
                             type="object"
-                            string="Record Discrepancy"
+                            string="Зафиксировать расхождение"
                             class="btn-primary"/>
                 </page>
             </xpath>
@@ -153,7 +153,7 @@
 
     <menuitem
         id="menu_retail_purchase_discrepancy"
-        name="Delivery Discrepancies"
+        name="Расхождения поставки"
         parent="purchase.menu_purchase_root"
         action="action_retail_purchase_discrepancy"
         sequence="20"
