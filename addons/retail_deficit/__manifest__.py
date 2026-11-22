@@ -10,6 +10,7 @@
         "data/ir_sequence.xml",
         "data/ir_cron.xml",
         "views/retail_stock_alert_views.xml",
+        "views/purchase_discrepancy_views.xml",
     ],
     "installable": True,
     "application": False,

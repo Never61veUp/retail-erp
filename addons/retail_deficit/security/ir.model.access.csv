@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_retail_stock_alert_internal_user,retail.stock.alert internal user,model_retail_stock_alert,base.group_user,1,1,1,1
+access_retail_purchase_discrepancy_internal_user,retail.purchase.discrepancy internal user,model_retail_purchase_discrepancy,purchase.group_purchase_user,1,1,1,1
+access_retail_purchase_discrepancy_wizard_internal_user,retail.purchase.discrepancy wizard internal user,model_retail_purchase_discrepancy_wizard,purchase.group_purchase_user,1,1,1,0
