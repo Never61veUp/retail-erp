@@ -4,6 +4,15 @@ from odoo import fields, models
 class StockQuant(models.Model):
     _inherit = "stock.quant"
 
+    retail_warehouse_id = fields.Many2one(
+        "stock.warehouse",
+        string="Warehouse",
+        related="location_id.warehouse_id",
+        store=True,
+        readonly=True,
+        index=True,
+    )
+
     retail_supplier_id = fields.Many2one(
         "res.partner",
         string="Supplier",
