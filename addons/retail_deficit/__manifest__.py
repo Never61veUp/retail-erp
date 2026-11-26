@@ -1,6 +1,6 @@
 {
     "name": "Retail Deficit Alerts",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.1.0",
     "summary": "Low stock alerts and purchase orders from min/max recommendations",
     "author": "",
     "license": "LGPL-3",

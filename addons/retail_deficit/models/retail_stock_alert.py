@@ -165,7 +165,21 @@ class RetailStockAlert(models.Model):
         if needs_order:
             open_po = alert._get_open_purchase_order() if alert else self.env["purchase.order"]
             if open_po:
-                alert.write(stock_vals)
+                vals = dict(stock_vals, recommended_qty=orderpoint.qty_to_order)
+                if open_po.state == "purchase":
+                    if alert.state != "new":
+                        vals.update({
+                            "state": "new",
+                            "date": fields.Datetime.now(),
+                        })
+                        alert.write(vals)
+                        alert._notify_purchasers()
+                    else:
+                        alert.write(vals)
+                else:
+                    if alert.state == "done":
+                        vals["state"] = "ordered"
+                    alert.write(vals)
                 return alert
             if not alert:
                 responsible = self._get_responsible_users()[:1]
@@ -227,7 +241,7 @@ class RetailStockAlert(models.Model):
     def action_create_purchase_order(self):
         self.ensure_one()
         open_po = self._get_open_purchase_order()
-        if open_po:
+        if open_po and self.state != "new":
             return self._open_purchase_order()
         if self.recommended_qty <= 0:
             raise UserError(_("Recommended quantity must be greater than zero."))
@@ -238,12 +252,25 @@ class RetailStockAlert(models.Model):
                 self.product_id.display_name,
             ))
         company = self.company_id or self.env.company
+        warehouse = self.warehouse_id or self.orderpoint_id.warehouse_id
+        picking_type = warehouse.in_type_id
+        if not picking_type:
+            picking_type = self.env["stock.picking.type"].search([
+                ("code", "=", "incoming"),
+                ("warehouse_id", "=", warehouse.id),
+            ], limit=1)
+        if not picking_type:
+            raise UserError(_(
+                "No incoming operation is configured for warehouse %s.",
+                warehouse.display_name,
+            ))
         purchase_order = self.env["purchase.order"].create({
             "partner_id": seller.partner_id.id,
             "origin": self.name,
             "company_id": company.id,
             "currency_id": company.currency_id.id,
             "date_order": fields.Datetime.now(),
+            "picking_type_id": picking_type.id,
             "order_line": [(0, 0, {
                 "product_id": self.product_id.id,
                 "name": self.product_id.display_name,
