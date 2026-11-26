@@ -19,11 +19,32 @@ class TestRetailExpiry(TransactionCase):
             "tracking": "lot",
             "use_expiration_date": True,
             "expiration_time": 30,
+            "alert_time": 10,
         })
         cls.product = product_template.product_variant_id
         cls.stock_location = cls.warehouse.lot_stock_id
         cls.vendor_location = cls.env.ref("stock.stock_location_suppliers")
         cls.customer_location = cls.env.ref("stock.stock_location_customers")
+        cls.warehouse_user = cls.env["res.users"].with_context(
+            no_reset_password=True
+        ).create({
+            "name": "Пользователь склада для теста",
+            "login": "retail-expiry-notification-test",
+            "group_ids": [(6, 0, [cls.env.ref("stock.group_stock_user").id])],
+            "company_id": cls.env.company.id,
+            "company_ids": [(6, 0, [cls.env.company.id])],
+        })
+
+    def _create_expiring_lot_with_stock(self, name, expiration_date):
+        lot = self.env["stock.lot"].create({
+            "name": name,
+            "product_id": self.product.id,
+            "expiration_date": expiration_date,
+        })
+        self.env["stock.quant"]._update_available_quantity(
+            self.product, self.stock_location, 3, lot_id=lot
+        )
+        return lot
 
     def _create_picking_with_line(self, code, location, destination, lot_name=False, expiry=False):
         picking_type = (
@@ -112,3 +133,32 @@ class TestRetailExpiry(TransactionCase):
 
         with self.assertRaisesRegex(UserError, "Нельзя отгрузить просроченный товар"):
             picking._check_retail_expiry_requirements()
+
+    def test_expiry_alert_notifies_warehouse_user_once_with_lot_details(self):
+        expiration_date = fields.Datetime.now() + timedelta(days=5)
+        lot = self._create_expiring_lot_with_stock("ПАРТИЯ-УВЕДОМЛЕНИЕ", expiration_date)
+
+        self.env["stock.lot"]._alert_date_exceeded()
+        self.env["stock.lot"]._alert_date_exceeded()
+
+        activities = lot.activity_ids.filtered(
+            lambda activity: activity.user_id == self.warehouse_user
+            and activity.summary == "Приближается срок годности"
+        )
+        self.assertEqual(len(activities), 1)
+        self.assertIn(self.product.display_name, activities.note)
+        self.assertIn(lot.name, activities.note)
+        self.assertIn("3 %s" % self.product.uom_id.name, activities.note)
+        self.assertIn(fields.Datetime.to_string(expiration_date), activities.note)
+
+    def test_expiry_alert_waits_until_configured_alert_date(self):
+        expiration_date = fields.Datetime.now() + timedelta(days=20)
+        lot = self._create_expiring_lot_with_stock("ПАРТИЯ-БЕЗ-УВЕДОМЛЕНИЯ", expiration_date)
+
+        self.env["stock.lot"]._alert_date_exceeded()
+
+        activities = lot.activity_ids.filtered(
+            lambda activity: activity.user_id == self.warehouse_user
+            and activity.summary == "Приближается срок годности"
+        )
+        self.assertFalse(activities)
