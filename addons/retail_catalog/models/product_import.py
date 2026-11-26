@@ -53,14 +53,14 @@ class RetailProductImportWizard(models.TransientModel):
     _name = "retail.product.import.wizard"
     _description = "Импорт товаров из Excel"
 
-    file = fields.Binary(string="Файл", required=True)
+    file = fields.Binary(string="Файл")
     filename = fields.Char(string="Имя файла")
 
     def action_download_template(self):
         return {
             "type": "ir.actions.act_url",
             "url": "/retail_catalog/static/src/xlsx/product_import_template.xlsx",
-            "target": "self",
+            "target": "download",
         }
 
     def action_import(self):
