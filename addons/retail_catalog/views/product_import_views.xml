@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_retail_product_import_wizard_form" model="ir.ui.view">
+        <field name="name">retail.product.import.wizard.form</field>
+        <field name="model">retail.product.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Импорт товаров из Excel">
+                <group>
+                    <field name="file" filename="filename"/>
+                    <field name="filename" invisible="1"/>
+                </group>
+                <div class="alert alert-info" role="status">
+                    Поддерживаются файлы .xlsx и .csv. Обязательные колонки: «Название», «Артикул».
+                </div>
+                <footer>
+                    <button name="action_import" type="object" string="Импортировать" class="btn-primary"/>
+                    <button name="action_download_template" type="object" string="Скачать шаблон" class="btn-secondary"/>
+                    <button special="cancel" string="Отмена"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_retail_product_import_line_list" model="ir.ui.view">
+        <field name="name">retail.product.import.line.list</field>
+        <field name="model">retail.product.import.line</field>
+        <field name="arch" type="xml">
+            <list
+                string="Результат импорта товаров"
+                create="false"
+                edit="false"
+                decoration-success="status == 'imported'"
+                decoration-warning="status == 'skipped'"
+                decoration-danger="status == 'error'"
+            >
+                <field name="row_number" string="Строка"/>
+                <field name="status" string="Статус" widget="badge"/>
+                <field name="name" string="Название"/>
+                <field name="default_code" string="Артикул"/>
+                <field name="barcode" string="Штрихкод" optional="show"/>
+                <field name="category_name" string="Категория" optional="hide"/>
+                <field name="uom_name" string="Ед. изм." optional="hide"/>
+                <field name="purchase_price" string="Закупочная цена" optional="hide"/>
+                <field name="sale_price" string="Розничная цена" optional="hide"/>
+                <field name="message" string="Сообщение"/>
+                <field name="product_id" string="Товар" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_retail_product_import_line_search" model="ir.ui.view">
+        <field name="name">retail.product.import.line.search</field>
+        <field name="model">retail.product.import.line</field>
+        <field name="arch" type="xml">
+            <search string="Результат импорта товаров">
+                <field name="name"/>
+                <field name="default_code"/>
+                <field name="barcode"/>
+                <field name="product_id"/>
+                <filter name="imported" string="Импортированы" domain="[('status', '=', 'imported')]"/>
+                <filter name="skipped" string="Пропущены" domain="[('status', '=', 'skipped')]"/>
+                <filter name="errors" string="Ошибки" domain="[('status', '=', 'error')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_retail_product_import" model="ir.actions.act_window">
+        <field name="name">Импорт товаров из Excel</field>
+        <field name="res_model">retail.product.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="menu_retail_product_import_inventory"
+        name="Импорт товаров"
+        parent="stock.menu_stock_inventory_control"
+        action="action_retail_product_import"
+        groups="purchase.group_purchase_user"
+        sequence="50"
+    />
+
+    <menuitem
+        id="menu_retail_product_import_purchase"
+        name="Импорт товаров"
+        parent="purchase.menu_purchase_root"
+        action="action_retail_product_import"
+        groups="purchase.group_purchase_user"
+        sequence="16"
+    />
+</odoo>

@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_retail_product_import_wizard_user,retail.product.import.wizard user,model_retail_product_import_wizard,purchase.group_purchase_user,1,1,1,1
+access_retail_product_import_line_user,retail.product.import.line user,model_retail_product_import_line,purchase.group_purchase_user,1,1,1,1
