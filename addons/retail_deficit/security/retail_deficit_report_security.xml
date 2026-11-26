@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="rule_retail_deficit_report_line_company" model="ir.rule">
+        <field name="name">Retail deficit report: multi-company</field>
+        <field name="model_id" ref="model_retail_deficit_report_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+</odoo>
