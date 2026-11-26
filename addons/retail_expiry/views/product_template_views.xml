@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="product_template_form_retail_expiry" model="ir.ui.view">
+        <field name="name">product.template.form.retail.expiry</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="retail_expiry" string="Сроки годности и хранение">
+                    <group>
+                        <group string="Контроль срока годности">
+                            <field name="tracking" string="Отслеживание партий и серий"/>
+                            <field name="use_expiration_date" string="Контролировать срок годности"
+                                   invisible="tracking == 'none'"/>
+                            <field name="expiration_time" string="Срок годности, дней"
+                                   invisible="tracking == 'none' or not use_expiration_date"/>
+                            <field name="alert_time" string="Предупреждать до истечения, дней"
+                                   invisible="tracking == 'none' or not use_expiration_date"/>
+                        </group>
+                        <group string="Условия хранения">
+                            <field name="storage_conditions" nolabel="1"
+                                   placeholder="Например: хранить при температуре от +2 до +8 °C"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

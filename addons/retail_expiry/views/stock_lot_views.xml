@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="stock_lot_search_retail_expiry" model="ir.ui.view">
+        <field name="name">stock.lot.search.retail.expiry</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="product_expiry.search_product_lot_filter_inherit_product_expiry"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='expiration_alerts']" position="attributes">
+                <attribute name="string">Приближается срок годности</attribute>
+                <attribute name="domain">[('alert_date', '&lt;=', 'now'), ('expiration_date', '&gt;', 'now')]</attribute>
+            </xpath>
+            <xpath expr="//filter[@name='expiration_alerts']" position="after">
+                <filter name="retail_expired_lots" string="Просроченные"
+                        domain="[('expiration_date', '&lt;=', 'now')]"/>
+                <filter name="retail_with_expiration" string="С контролем срока годности"
+                        domain="[('use_expiration_date', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_lot_list_retail_expiry" model="ir.ui.view">
+        <field name="name">stock.lot.list.retail.expiry</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="product_expiry.view_production_lot_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-danger">expiration_date and expiration_date &lt;= context_today().strftime('%Y-%m-%d')</attribute>
+            </xpath>
+            <xpath expr="//field[@name='expiration_date']" position="attributes">
+                <attribute name="string">Срок годности</attribute>
+                <attribute name="optional">show</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_lot_form_retail_expiry" model="ir.ui.view">
+        <field name="name">stock.lot.form.retail.expiry</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="product_expiry.view_move_form_expiry"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='expiration_dates']" position="attributes">
+                <attribute name="string">Сроки годности партии</attribute>
+            </xpath>
+            <xpath expr="//field[@name='expiration_date']" position="attributes">
+                <attribute name="string">Срок годности</attribute>
+            </xpath>
+            <xpath expr="//field[@name='alert_date']" position="attributes">
+                <attribute name="string">Дата предупреждения</attribute>
+            </xpath>
+            <xpath expr="//field[@name='use_date']" position="attributes">
+                <attribute name="string">Годен до</attribute>
+            </xpath>
+            <xpath expr="//field[@name='removal_date']" position="attributes">
+                <attribute name="string">Снять с хранения</attribute>
+            </xpath>
+            <xpath expr="//span[@class='badge rounded-pill float-end text-bg-warning']" position="replace">
+                <span class="badge rounded-pill float-end text-bg-warning"
+                      invisible="not (alert_date &lt;= time.strftime('%Y-%m-%d %H:%M:%S') &lt; expiration_date)">Скоро истекает</span>
+            </xpath>
+            <xpath expr="//span[@class='badge rounded-pill float-end text-bg-danger']" position="replace">
+                <span class="badge rounded-pill float-end text-bg-danger"
+                      invisible="not product_expiry_alert">Просрочено</span>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_move_line_operation_retail_expiry" model="ir.ui.view">
+        <field name="name">stock.move.line.operation.retail.expiry</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="product_expiry.view_stock_move_line_operation_tree_expiry"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='expiration_date']" position="attributes">
+                <attribute name="string">Срок годности</attribute>
+            </xpath>
+            <xpath expr="//field[@name='removal_date']" position="attributes">
+                <attribute name="string">Дата снятия с хранения</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_move_line_detailed_operation_retail_expiry" model="ir.ui.view">
+        <field name="name">stock.move.line.detailed.operation.retail.expiry</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="product_expiry.view_stock_move_line_detailed_operation_tree_expiry"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='expiration_date']" position="attributes">
+                <attribute name="string">Срок годности</attribute>
+            </xpath>
+            <xpath expr="//field[@name='removal_date']" position="attributes">
+                <attribute name="string">Дата снятия с хранения</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_retail_expired_lots" model="ir.actions.act_window">
+        <field name="name">Просроченные партии</field>
+        <field name="res_model">stock.lot</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="stock_lot_search_retail_expiry"/>
+        <field name="domain">[('use_expiration_date', '=', True), ('product_qty', '&gt;', 0), ('expiration_date', '&lt;=', 'now')]</field>
+    </record>
+
+    <record id="action_retail_expiry_report_wizard" model="ir.actions.act_window">
+        <field name="name">Партии с истекающим сроком</field>
+        <field name="res_model">retail.expiry.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_retail_expiring_lots" name="Партии по сроку годности"
+              parent="stock.menu_stock_warehouse_mgmt"
+              action="action_retail_expiry_report_wizard" sequence="91"
+              groups="stock.group_stock_user"/>
+    <menuitem id="menu_retail_expired_lots" name="Просроченные партии"
+              parent="stock.menu_stock_warehouse_mgmt"
+              action="action_retail_expired_lots" sequence="92"
+              groups="stock.group_stock_user"/>
+</odoo>
