@@ -4,7 +4,7 @@ from odoo.exceptions import UserError
 
 class RetailStockAlert(models.Model):
     _name = "retail.stock.alert"
-    _description = "Stock Deficit Alert"
+    _description = "Уведомление о дефиците запасов"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "date desc, id desc"
 

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_retail_purchase_discrepancy_list" model="ir.ui.view">
+        <field name="name">retail.purchase.discrepancy.list</field>
+        <field name="model">retail.purchase.discrepancy</field>
+        <field name="arch" type="xml">
+            <list string="Расхождения поставки">
+                <field name="date"/>
+                <field name="purchase_order_id"/>
+                <field name="product_id"/>
+                <field name="discrepancy_type" widget="badge"/>
+                <field name="quantity"/>
+                <field name="reason"/>
+                <field name="picking_id"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_retail_purchase_discrepancy_form" model="ir.ui.view">
+        <field name="name">retail.purchase.discrepancy.form</field>
+        <field name="model">retail.purchase.discrepancy</field>
+        <field name="arch" type="xml">
+            <form string="Расхождение поставки">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="purchase_order_id"/>
+                            <field name="purchase_line_id"
+                                   domain="[('order_id', '=', purchase_order_id)]"/>
+                            <field name="product_id"/>
+                            <field name="picking_id"/>
+                        </group>
+                        <group>
+                            <field name="discrepancy_type"/>
+                            <field name="quantity"/>
+                            <field name="date"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="reason"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_retail_purchase_discrepancy_search" model="ir.ui.view">
+        <field name="name">retail.purchase.discrepancy.search</field>
+        <field name="model">retail.purchase.discrepancy</field>
+        <field name="arch" type="xml">
+            <search string="Расхождения поставки">
+                <field name="purchase_order_id"/>
+                <field name="product_id"/>
+                <field name="reason"/>
+                <filter name="under" string="Недовоз"
+                        domain="[('discrepancy_type', '=', 'under')]"/>
+                <filter name="over" string="Излишек"
+                        domain="[('discrepancy_type', '=', 'over')]"/>
+                <filter name="damage" string="Брак"
+                        domain="[('discrepancy_type', '=', 'damage')]"/>
+                <group>
+                    <filter name="group_type" string="Тип расхождения"
+                            context="{'group_by': 'discrepancy_type'}"/>
+                    <filter name="group_order" string="Заказ поставщику"
+                            context="{'group_by': 'purchase_order_id'}"/>
+                    <filter name="group_product" string="Товар"
+                            context="{'group_by': 'product_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_retail_purchase_discrepancy_wizard" model="ir.ui.view">
+        <field name="name">retail.purchase.discrepancy.wizard.form</field>
+        <field name="model">retail.purchase.discrepancy.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Фиксация расхождения">
+                <group>
+                    <group>
+                        <field name="purchase_order_id" readonly="1"/>
+                        <field name="purchase_line_id"
+                               domain="[('order_id', '=', purchase_order_id)]"/>
+                        <field name="picking_id"
+                               domain="[('id', 'in', purchase_order_id.picking_ids)]"/>
+                    </group>
+                    <group>
+                        <field name="discrepancy_type"/>
+                        <field name="quantity"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="reason"/>
+                </group>
+                <footer>
+                    <button name="action_confirm"
+                            type="object"
+                            string="Зафиксировать"
+                            class="btn-primary"/>
+                    <button string="Отмена" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_retail_purchase_discrepancy" model="ir.actions.act_window">
+        <field name="name">Расхождения поставки</field>
+        <field name="res_model">retail.purchase.discrepancy</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id"
+               ref="view_retail_purchase_discrepancy_search"/>
+    </record>
+
+    <record id="purchase_order_form_retail_discrepancy" model="ir.ui.view">
+        <field name="name">purchase.order.form.retail.discrepancy</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_open_retail_discrepancies"
+                        icon="fa-exclamation-triangle">
+                    <field name="retail_discrepancy_count"
+                           widget="statinfo"
+                           string="Расхождения"/>
+                </button>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Расхождения поставки"
+                      name="retail_delivery_discrepancies">
+                    <field name="retail_discrepancy_ids" readonly="1">
+                        <list>
+                            <field name="date"/>
+                            <field name="product_id"/>
+                            <field name="discrepancy_type"/>
+                            <field name="quantity"/>
+                            <field name="reason"/>
+                            <field name="picking_id"/>
+                            <field name="user_id"/>
+                        </list>
+                    </field>
+                    <button name="action_record_retail_discrepancy"
+                            type="object"
+                            string="Зафиксировать расхождение"
+                            class="btn-primary"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_retail_purchase_discrepancy"
+        name="Расхождения поставки"
+        parent="purchase.menu_purchase_root"
+        action="action_retail_purchase_discrepancy"
+        sequence="20"
+    />
+</odoo>

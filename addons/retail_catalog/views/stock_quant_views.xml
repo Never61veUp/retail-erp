@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_stock_quant_retail_pivot" model="ir.ui.view">
+        <field name="name">stock.quant.retail.pivot</field>
+        <field name="model">stock.quant</field>
+        <field name="arch" type="xml">
+            <pivot string="Stock by Point" sample="1">
+                <field name="product_id" type="row"/>
+                <field name="warehouse_id" type="col"/>
+                <field name="quantity" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_stock_quant_retail_search" model="ir.ui.view">
+        <field name="name">stock.quant.retail.search</field>
+        <field name="model">stock.quant</field>
+        <field name="arch" type="xml">
+            <search string="Stock by Point">
+                <field name="product_id" string="Product"/>
+                <field name="warehouse_id" string="Warehouse"/>
+                <field name="product_categ_id" string="Category"/>
+                <field name="retail_supplier_id" string="Supplier"/>
+                <filter
+                    name="internal_loc"
+                    string="Internal Locations"
+                    domain="[('location_id.usage', '=', 'internal'), ('location_id.warehouse_id', '!=', False)]"
+                />
+                <group>
+                    <filter name="group_product" string="Product" domain="[]" context="{'group_by': 'product_id'}"/>
+                    <filter name="group_warehouse" string="Warehouse" domain="[]" context="{'group_by': 'warehouse_id'}"/>
+                    <filter name="group_category" string="Category" domain="[]" context="{'group_by': 'product_categ_id'}"/>
+                    <filter name="group_location" string="Location" domain="[]" context="{'group_by': 'location_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_stock_quant_retail_by_point" model="ir.actions.act_window">
+        <field name="name">Stock by Point</field>
+        <field name="res_model">stock.quant</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="view_id" ref="view_stock_quant_retail_pivot"/>
+        <field name="search_view_id" ref="view_stock_quant_retail_search"/>
+        <field name="domain">[('location_id.usage', '=', 'internal'), ('location_id.warehouse_id', '!=', False)]</field>
+        <field name="context">{'search_default_internal_loc': 1}</field>
+    </record>
+
+    <menuitem
+        id="menu_stock_quant_retail_by_point_inventory"
+        name="Stock by Point"
+        parent="stock.menu_warehouse_report"
+        action="action_stock_quant_retail_by_point"
+        sequence="20"
+    />
+
+</odoo>
