@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_retail_deficit_report_wizard_form" model="ir.ui.view">
+        <field name="name">retail.deficit.report.wizard.form</field>
+        <field name="model">retail.deficit.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Дефицит по магазинам">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate" type="object" string="Сформировать" class="btn-primary"/>
+                    <button special="cancel" string="Отмена"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_retail_deficit_report_line_list" model="ir.ui.view">
+        <field name="name">retail.deficit.report.line.list</field>
+        <field name="model">retail.deficit.report.line</field>
+        <field name="arch" type="xml">
+            <list
+                string="Дефицит по магазинам"
+                create="false"
+                edit="false"
+                default_order="sales_qty desc"
+                decoration-danger="qty_available &lt;= 0"
+            >
+                <field name="location_id" string="Точка"/>
+                <field name="warehouse_id" string="Склад" optional="show"/>
+                <field name="product_id" string="Товар"/>
+                <field name="qty_available" string="Доступный остаток" sum="Итого остаток"/>
+                <field name="product_min_qty" string="Порог (min)"/>
+                <field name="sales_qty" string="Продажи за период" sum="Итого продаж"/>
+                <field name="uom_id" string="Ед. изм." optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_retail_deficit_report_line_search" model="ir.ui.view">
+        <field name="name">retail.deficit.report.line.search</field>
+        <field name="model">retail.deficit.report.line</field>
+        <field name="arch" type="xml">
+            <search string="Дефицит по магазинам">
+                <field name="product_id"/>
+                <field name="warehouse_id"/>
+                <field name="location_id"/>
+                <group>
+                    <filter name="group_warehouse" string="Склад" domain="[]" context="{'group_by': 'warehouse_id'}"/>
+                    <filter name="group_product" string="Товар" domain="[]" context="{'group_by': 'product_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_retail_deficit_report" model="ir.actions.act_window">
+        <field name="name">Дефицит по магазинам</field>
+        <field name="res_model">retail.deficit.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="menu_retail_deficit_report_inventory"
+        name="Дефицит по магазинам"
+        parent="stock.menu_warehouse_report"
+        action="action_retail_deficit_report"
+        sequence="30"
+    />
+
+    <menuitem
+        id="menu_retail_deficit_report_purchase"
+        name="Дефицит по магазинам"
+        parent="purchase.purchase_report_main"
+        action="action_retail_deficit_report"
+        sequence="30"
+    />
+</odoo>

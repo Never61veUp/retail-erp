@@ -4,3 +4,5 @@ access_retail_stock_alert_purchase_user,retail.stock.alert purchase user,model_r
 access_retail_stock_alert_purchase_manager,retail.stock.alert purchase manager,model_retail_stock_alert,purchase.group_purchase_manager,1,1,1,1
 access_retail_purchase_discrepancy_internal_user,retail.purchase.discrepancy internal user,model_retail_purchase_discrepancy,purchase.group_purchase_user,1,1,1,1
 access_retail_purchase_discrepancy_wizard_internal_user,retail.purchase.discrepancy wizard internal user,model_retail_purchase_discrepancy_wizard,purchase.group_purchase_user,1,1,1,0
+access_retail_deficit_report_wizard_user,retail.deficit.report.wizard user,model_retail_deficit_report_wizard,base.group_user,1,1,1,1
+access_retail_deficit_report_line_user,retail.deficit.report.line user,model_retail_deficit_report_line,base.group_user,1,1,1,1
